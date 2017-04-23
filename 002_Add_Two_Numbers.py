@@ -7,13 +7,7 @@ Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
 Output: 7 -> 0 -> 8
 '''
 
-# Definition for singly-linked list.
-class ListNode(object):
-    def __init__(self, x):
-        self.val = x
-        self.next = None
-    def __str__(self):
-        return str(self.val) if self.next is None else str(self.val) + ' -> ' + str(self.next)
+from structs.singly_linked_list import ListNode, generate_list
 
 class Solution(object):
     def addTwoNumbers(self, l1, l2):
@@ -73,17 +67,8 @@ class Solution(object):
                     node.next = None
                     return result
 
-def generate_list(s):
-    l = p = ListNode(int(s[0]))
-    for c in s[1:]:
-        n = ListNode(int(c))
-        p.next = n
-        p = n
-    p.next = None
-    return l
-
 if __name__ == '__main__':
-    l1 = generate_list('99999')
-    l2 = generate_list('100001')
+    l1 = generate_list([9, 9, 9, 9, 9])
+    l2 = generate_list([1, 0, 0, 0, 0, 1])
     print Solution().addTwoNumbers(l1, l2)
 
