@@ -23,7 +23,7 @@ You may assume beginWord and endWord are non-empty and are not the same.
 
 # BFS
 # can be improved with two-end BFS
-from queue import Queue
+from Queue import Queue
 
 class Solution(object):
     def ladderLength(self, beginWord, endWord, wordList):
@@ -33,7 +33,7 @@ class Solution(object):
         step = {w:l+2 for w in wordList}
         alphabets = 'abcdefghijklmnopqrstuvwxyz'
         q = Queue()
-        for i in range(lword):
+        for i in xrange(lword):
             for ch in alphabets:
                 word = beginWord[:i] + ch + beginWord[i+1:]
                 if word in wordList:
@@ -42,7 +42,7 @@ class Solution(object):
                     step[word] = 2
         while q.qsize() > 0:
             word = q.get()
-            for i in range(lword):
+            for i in xrange(lword):
                 for ch in alphabets:
                     w = word[:i] + ch + word[i+1:]
                     if w in wordList and step[w] > step[word] + 1:
