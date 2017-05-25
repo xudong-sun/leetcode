@@ -16,7 +16,7 @@ class Solution(object):
             if token == '+': stack.append(stack.pop() + stack.pop())
             elif token == '-': stack.append(-stack.pop() + stack.pop())
             elif token == '*': stack.append(stack.pop() * stack.pop())
-            elif token == '/': 
+            elif token == '/': # note for python2: -6 / 7 = -1
                 d1, d2 = stack.pop(), stack.pop()
                 sign = 1
                 if d1 < 0: d1, sign = abs(d1), -sign
