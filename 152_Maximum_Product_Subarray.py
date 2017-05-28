@@ -14,7 +14,6 @@ class Solution(object):
             max_neg = min(tmp1, tmp2, num)
             max_pos = max(tmp1, tmp2, num)
             max_product = max(max_product, max_pos)
-            #print max_neg, max_pos, max_product
         return max_product
 
 if __name__ == '__main__':
