@@ -4,12 +4,20 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <set>
+#include <unordered_set>
+#include <map>
+#include <unordered_map>
+#include <stack>
+#include <queue>
 #include <iostream>
 #include <sstream>
 #include <cstdio>
 #include <cstdlib>
 #include <regex>
 #include <algorithm>
+
+#include <assert.h>
 
 #include "commons.h"
 #include "print_utils.h"
