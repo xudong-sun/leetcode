@@ -13,7 +13,7 @@ There is only one duplicate number in the array, but it could be repeated more t
 #define __SOLUTION_2
 
 #ifdef __SOLUTION_1
-// binary search the answer space of [1,n]
+// O(nlogn), binary search the answer space of [1,n]
 
 class Solution {
 public:
@@ -32,7 +32,7 @@ public:
 #endif
 
 #ifdef __SOLUTION_2
-// similar to 142_Linked_list_Cycle_II
+// O(n), similar to 142_Linked_list_Cycle_II
 // treat nums[x] = y as a ListNode x pointing to y
 
 class Solution {
