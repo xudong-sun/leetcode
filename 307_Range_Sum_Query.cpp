@@ -79,24 +79,55 @@ private:
 class NumArray {
 public:
 	NumArray(const std::vector<int>& nums) {
-		
+		if (nums.size() > 0) tree = buildTree(nums, 0, nums.size() - 1);
 	}
 
 	void update(int i, int val) {
-		
+		updateTree(i, val, tree);
 	}
 
 	int sumRange(int i, int j) {
-		
+		return getSum(i, j, tree);
 	}
 private:
 	struct TreeNode {
-		int left, right, val;
+		int left_boundary, right_boundary, val;
+		std::shared_ptr<TreeNode> left, right;
+		TreeNode(int val, int l, int r) : val(val), left_boundary(l), right_boundary(r), left(nullptr), right(nullptr) {}
 	};
-	void buildTree(const std::vector<int>& nums) {
-		
+	std::shared_ptr<TreeNode> buildTree(const std::vector<int>& nums, int l, int r) {
+		if (l == r) return std::make_shared<TreeNode>(nums[l], l, r);
+		auto node = std::make_shared<TreeNode>(0, l, r);
+		int m = l + (r - l) / 2;
+		node->left = buildTree(nums, l, m);
+		node->right = buildTree(nums, m + 1, r);
+		node->val = node->left->val + node->right->val;
+		return node;
 	}
-	std::vector<TreeNode> tree;
+	int updateTree(int p, int val, std::shared_ptr<TreeNode> node) {
+		if (node->left == nullptr) {
+			int diff = val - node->val;
+			node->val = val;
+			return diff;
+		}
+		int m = node->left_boundary + (node->right_boundary - node->left_boundary) / 2;
+		int diff;
+		if (p <= m) diff = updateTree(p, val, node->left);
+		else diff = updateTree(p, val, node->right);
+		node->val += diff;
+		return diff;
+	}
+	int getSum(int i, int j, std::shared_ptr<TreeNode> node) {
+		if (i <= node->left_boundary && j >= node->right_boundary) return node->val;
+		else if (i > node->right_boundary || j < node->left_boundary) return 0;
+		else {
+			int m = node->left_boundary + (node->right_boundary - node->left_boundary) / 2;
+			if (i > m) return getSum(i, j, node->right);
+			else if (j <= m) return getSum(i, j, node->left);
+			else return getSum(i, j, node->left) + getSum(i, j, node->right);
+		}
+	}
+	std::shared_ptr<TreeNode> tree;
 };
 
 #endif
