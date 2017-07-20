@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <regex>
 #include <algorithm>
+#include <numeric>
 
 #include <assert.h>
 
