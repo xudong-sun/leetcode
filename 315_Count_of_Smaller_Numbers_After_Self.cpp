@@ -14,7 +14,8 @@ Return the array [2, 1, 1, 0].
 
 #include "essentials.h"
 
-#define __SOLUTION_3
+// There are 4 solutions, all O(nlogn)
+#define __SOLUTION_4
 
 #ifdef __SOLUTION_1
 
@@ -142,6 +143,56 @@ private:
 				node->right = new TreeNode(x);
 				return node->smallCount + node->dupCount;
 			}
+		}
+	}
+};
+
+#endif
+
+#ifdef __SOLUTION_4
+
+// merge sort
+// calculate result while doing merge sort
+class Solution {
+public:
+	std::vector<int> countSmaller(std::vector<int>& nums) {
+		size_t n = nums.size();
+		std::vector<int> indices(n, 0), result(n, 0);
+		std::iota(indices.begin(), indices.end(), 0);
+		mergeSort(nums, indices, result, 0, n - 1);
+		return result;
+	}
+private:
+	void mergeSort(std::vector<int>& nums, std::vector<int>& indices, std::vector<int>& result, int l, int r) {
+		if (l >= r) return;
+		int m = l + ((r - l) >> 1);
+		mergeSort(nums, indices, result, l, m);
+		mergeSort(nums, indices, result, m + 1, r);
+		auto mid = nums.cbegin() + m + 1, indexmid = indices.cbegin() + m + 1;
+		std::vector<int> left(nums.cbegin() + l, mid), right(mid, nums.cbegin() + r + 1), indexleft(indices.cbegin() + l, indexmid), indexright(indexmid, indices.cbegin() + r + 1);
+		auto leftit = left.cbegin(), rightit = right.cbegin(), indexleftit = indexleft.cbegin(), indexrightit = indexright.cbegin();
+		auto numit = nums.begin() + l, indexit=indices.begin() + l;
+		int count = 0;
+		while (leftit != left.cend() && rightit != right.cend()) {
+			if (*leftit <= *rightit) {
+				result[*indexleftit] += count;
+				*(numit++) = *(leftit++);
+				*(indexit++) = *(indexleftit++);
+			}
+			else {
+				count++;
+				*(numit++) = *(rightit++);
+				*(indexit++) = *(indexrightit++);
+			}
+		}
+		if (leftit != left.cend()) {
+			std::for_each(indexleftit, indexleft.cend(), [&result, count](int x) { result[x] += count; });
+			std::copy(leftit, left.cend(), numit);
+			std::copy(indexleftit, indexleft.cend(), indexit);
+		}
+		if (rightit != right.cend()) {
+			std::copy(rightit, right.cend(), numit);
+			std::copy(indexrightit, indexright.cend(), indexit);
 		}
 	}
 };
