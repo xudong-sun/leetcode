@@ -31,8 +31,18 @@ public:
 		return result;
 	}
 private:
-	// O(nk), find the maxNumber of length k in a vector
-	// can be improved to O(n) using stack
+	// O(n), find the maxNumber of length k in a vector
+	// use a stack, pop out smaller numbers
+	std::vector<int> maxNumber(const std::vector<int>& nums, int k) {
+		std::vector<int> result(k, 0);
+		int pos = 0, n=nums.size();
+		for (int i = 0; i < n; i++) {
+			while (pos > 0 && pos > k - n + i && result[pos - 1] < nums[i]) pos--;
+			if (pos < k) result[pos++] = nums[i];
+		}
+		return result;
+	}
+	/* This implementation is obsolete with O(nk)
 	std::vector<int> maxNumber(const std::vector<int>& nums, int k) {
 		std::vector<int> result;
 		int start = 0;
@@ -49,8 +59,8 @@ private:
 			start = index + 1;
 		}
 		return result;
-	}
-	// O(k^2), merge
+	}*/
+	// O(k) on average, O(k^2) worst case, merge
 	std::vector<int> merge(const std::vector<int>& nums1, const std::vector<int>& nums2) {
 		std::vector<int> result;
 		auto resultIt = std::back_inserter(result);
@@ -64,14 +74,16 @@ private:
 		if (it2 != nums2.cend()) std::copy(it2, nums2.cend(), resultIt);
 		return result;
 	}
-	// To compare how to merge when two digits are equal, we have to compare the concatenated result.
+	// To compare how to merge when two digits are equal, we have to compare the following digits
+	// If all digits are the same until the end of the vector, choose the longer one
 	std::vector<int>::const_iterator& compare(std::vector<int>::const_iterator& it1, std::vector<int>::const_iterator end1, std::vector<int>::const_iterator& it2, std::vector<int>::const_iterator end2) {
-		std::vector<int> val1, val2;
-		std::copy(it1, end1, std::back_inserter(val1));
-		std::copy(it2, end2, std::back_inserter(val1));
-		std::copy(it2, end2, std::back_inserter(val2));
-		std::copy(it1, end1, std::back_inserter(val2));
-		return val1 > val2 ? it1 : it2;
+		auto itt1 = it1, itt2 = it2;
+		while (itt1 != end1 && itt2 != end2) {
+			if (*itt1 > *itt2) return it1;
+			else if (*itt1 < *itt2) return it2;
+			itt1++; itt2++;
+		}
+		return itt1 == end1 ? it2 : it1;
 	}
 };
 
