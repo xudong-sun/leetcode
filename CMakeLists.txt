@@ -12,8 +12,7 @@ file(GLOB HEADERS "${MY_LIB_DIR}/*.h" "${HEADER_DIR}/*.h")
 message("headers: " ${HEADERS})
 
 # source file
-#set(SRC_LIST 321_Create_Maximum_Number.cpp)
-file(GLOB SRC_LIST "321_*.cpp")
+file(GLOB SRC_LIST "$ENV{LEETCODE_ID}_*.cpp")
 message("source file: " ${SRC_LIST})
 
 add_executable(main ${HEADERS} ${SRC_LIST})
