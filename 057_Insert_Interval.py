@@ -17,36 +17,76 @@ from structs.interval import Interval, generate_intervals
 
 class Solution(object):
     def insert(self, intervals, newInterval):
-        def _binsearch(intervals, l, r, val):
-            if l + 1 >= r: return l
-            m = l + (r-l) / 2
-            if intervals[m].start == val: return m
-            elif intervals[m].start < val: return _binsearch(intervals, m, r, val)
-            else: return _binsearch(intervals, l, m, val)
-        def find(intervals, val):
-            if val < intervals[0].start: return -1
-            else: return _binsearch(intervals, 0, len(intervals), val)
-        l = len(intervals)
-        if l == 0: return [newInterval]
-        x1, x2 = find(intervals, newInterval.start), find(intervals, newInterval.end)
-        res = []
-        if x1 >= 0:
-            for interval in intervals[:x1]: res.append(interval)
-        if x1 >= 0 and intervals[x1].end >= newInterval.start:
-            if intervals[x2].end >= newInterval.end: res.append(Interval(intervals[x1].start, intervals[x2].end))
-            else: res.append(Interval(intervals[x1].start, newInterval.end))
-        else:
-            if x1 >= 0: res.append(intervals[x1])
-            if x2 >= 0 and intervals[x2].end >= newInterval.end: res.append(Interval(newInterval.start, intervals[x2].end))
-            else: res.append(newInterval)
-        for interval in intervals[x2+1:]:
-            res.append(interval)
+        res, idx, li = [], 0, len(intervals)
+        # phase 1
+        while idx < li and intervals[idx].end < newInterval.start: 
+            res.append(intervals[idx])
+            idx += 1
+        # phase 2
+        if idx < li: st = min(intervals[idx].start, newInterval.start)
+        else: st = newInterval.start
+        while idx < li and intervals[idx].start <= newInterval.end: idx += 1
+        if idx > 0: en = max(intervals[idx-1].end, newInterval.end)
+        else: en = newInterval.end
+        res.append(Interval(st, en))
+        # phase 3
+        while idx < li:
+            res.append(intervals[idx])
+            idx += 1
         return res
 
+import unittest
+class Test(unittest.TestCase):
+    def test1(self):
+        intervals = generate_intervals([[1,3],[6,9]])
+        newInterval = Interval(2, 5)
+        inserted = Solution().insert(intervals, newInterval)
+        result_str = ', '.join(map(str, inserted))
+        self.assertEqual(result_str, '[1, 5], [6, 9]')
+    def test2(self):
+        intervals = generate_intervals([[1,2],[3,5],[6,7],[8,10],[12,16]])
+        newInterval = Interval(4, 9)
+        inserted = Solution().insert(intervals, newInterval)
+        result_str = ', '.join(map(str, inserted))
+        self.assertEqual(result_str, '[1, 2], [3, 10], [12, 16]')
+    def test3(self):
+        intervals = generate_intervals([[1,3]])
+        newInterval = Interval(-1, 1)
+        inserted = Solution().insert(intervals, newInterval)
+        result_str = ', '.join(map(str, inserted))
+        self.assertEqual(result_str, '[-1, 3]')
+    def test4(self):
+        intervals = generate_intervals([[1,3]])
+        newInterval = Interval(-1, 0)
+        inserted = Solution().insert(intervals, newInterval)
+        result_str = ', '.join(map(str, inserted))
+        self.assertEqual(result_str, '[-1, 0], [1, 3]')
+    def test5(self):
+        intervals = generate_intervals([[1,3]])
+        newInterval = Interval(-1, 4)
+        inserted = Solution().insert(intervals, newInterval)
+        result_str = ', '.join(map(str, inserted))
+        self.assertEqual(result_str, '[-1, 4]')
+    def test6(self):
+        intervals = generate_intervals([[1,3]])
+        newInterval = Interval(3, 8)
+        inserted = Solution().insert(intervals, newInterval)
+        result_str = ', '.join(map(str, inserted))
+        self.assertEqual(result_str, '[1, 8]')
+    def test7(self):
+        intervals = generate_intervals([[1,3]])
+        newInterval = Interval(4, 8)
+        inserted = Solution().insert(intervals, newInterval)
+        result_str = ', '.join(map(str, inserted))
+        self.assertEqual(result_str, '[1, 3], [4, 8]')
+    def test8(self):
+        newInterval = Interval(4, 8)
+        inserted = Solution().insert([], newInterval)
+        result_str = ', '.join(map(str, inserted))
+        self.assertEqual(result_str, '[4, 8]')
+
+
 if __name__ == '__main__':
-    intervals = generate_intervals([[1,3]])
-    newInterval = Interval(-1, 2)
-    inserted = Solution().insert(intervals, newInterval)
-    print ', '.join([str(interval) for interval in inserted])
+    unittest.main()
 
 

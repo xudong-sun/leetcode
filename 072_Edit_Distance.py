@@ -13,7 +13,7 @@ c) Replace a character
 # let a[i][j] = minimum # steps for word1[:i+1] to be converted to word2[:j+1]
 # if word1[i] == word2[j]: a[i][j] = min(a[i][j-1] + 1, a[i-1][j] + 1, a[i-1][j-1])
 # else: a[i][j] = min(a[i][j-1] + 1, a[i-1][j] + 1, a[i-1][j-1] + 1)
-# The above equation can be realized with O(mn), S(n)
+# The above equation can be implemented with O(mn), space O(n)
 class Solution(object):
     def minDistance(self, word1, word2):
         l1, l2 = len(word1), len(word2)
