@@ -9,7 +9,7 @@ You may assume all elements in the array are non-negative integers and fit in th
 '''
 
 
-# radix sort
+# Solution 1: radix sort, O(n), 162ms
 class Solution(object):
     def maximumGap(self, nums):
         buckets = [[], []]
@@ -24,18 +24,47 @@ class Solution(object):
         for i in xrange(l-1): ans = max(ans, nums[i+1] - nums[i])
         return ans
 
+# Solution 2: bucket sort, O(n), 46ms
+# with n numbers, the maximum gap must be larger than ceil((max - min) / n)
+# so if we divide the range into `n` bins, the maximum gap should be values across adjacent (different) bins
+class Solution(object):
+    def maximumGap(self, nums):
+        n = len(nums)
+        if n < 2: return 0
+        nums_min, nums_max = min(nums), max(nums)
+        if nums_min == nums_max: return 0
+        gap = max((nums_max - nums_min) / n, 1)
+        num_bins = (nums_max - nums_min) / gap + 1
+        mins, maxs, flags = [0x7fffffff] * num_bins, [0] * num_bins, [False] * num_bins
+        for num in nums:
+            idx = (num - nums_min) / gap
+            flags[idx] = True
+            mins[idx] = min(mins[idx], num)
+            maxs[idx] = max(maxs[idx], num)
+        ans, x = gap, maxs[0]
+        for idx in xrange(1, num_bins):
+            if flags[idx]:
+                ans, x = max(ans, mins[idx] - x), maxs[idx]
+        return ans
+
 import unittest
 class Test(unittest.TestCase):
     def test1(self):
         self.assertEqual(Solution().maximumGap([0,3,9,5,2]), 4)
         self.assertEqual(Solution().maximumGap([0,9,5]), 5)
     def test2(self):
-        self.assertEqual(Solution().maximumGap([0, 0x7fffffff]), 0x7fffffff)
+        self.assertEqual(Solution().maximumGap([4,2,5,22,1,3,9,24,0]), 13)
     def test3(self):
+        self.assertEqual(Solution().maximumGap([0, 0x7fffffff]), 0x7fffffff)
+    def test4(self):
         self.assertEqual(Solution().maximumGap([12]), 0)
         self.assertEqual(Solution().maximumGap([]), 0)
-    def test4(self):
+    def test5(self):
         self.assertEqual(Solution().maximumGap(range(0, 1000000, 10)), 10)
+    def test6(self):
+        self.assertEqual(Solution().maximumGap([1,1,1,1]), 0)
+    def test7(self):
+        self.assertEqual(Solution().maximumGap([1,1,1,2,1]), 1)
 
 if __name__ == '__main__':
     unittest.main()

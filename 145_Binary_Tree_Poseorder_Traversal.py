@@ -14,6 +14,7 @@ return [3,2,1].
 
 from structs.binary_tree import generate_tree
 
+# This solution is based on 144_Binary_Tree_Preorder_Traversal solution 1; a solution based on its solution 2 should also work.
 class Solution(object):
     def postorderTraversal(self, root):
         ans = []
