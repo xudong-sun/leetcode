@@ -15,42 +15,31 @@ Example: 19 is a happy number
 
 class Solution {
 public:
-
-	bool isHappy(int n) 
-	{
-		std::vector<int> v = { n };
-		do
-		{
-			n = f(n);
-			if (n == 1) return true;
-			else if (find(v, n)) return false;
-			v.push_back(n);
-		} while (1);
-	}
+    bool isHappy(int n) {
+        std::unordered_set<int> nums{ n };
+        while (n != 1) {
+            n = f(n);
+            if (nums.find(n) != nums.end()) return false;
+            nums.insert(n);
+        }
+        return true;
+    }
 
 private:
-	int f(int n)
-	{
-		int z = 0, m;
-		while (n > 0)
-		{
-			m = n % 10;
-			z += m*m;
-			n /= 10;
-		}
-		return z;
-	}
-
-	bool find(std::vector<int>& v, int val)
-	{
-		for (unsigned int i = 0; i < v.size(); i++) if (v[i] == val) return true;
-		return false;
-	}
+    int f(int n) {
+        int z = 0, m;
+        while (n > 0) {
+            m = n % 10;
+            z += m*m;
+            n /= 10;
+        }
+        return z;
+    }
 };
 
 int main() {
-	auto sol = new Solution();
-	std::cout << sol->isHappy(19) << std::endl;
-	delete sol;
-	commons::pause();
+    auto sol = new Solution();
+    std::cout << sol->isHappy(19) << std::endl;
+    delete sol;
+    commons::pause();
 }
