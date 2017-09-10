@@ -18,7 +18,7 @@ There must be no consecutive horizontal lines of equal height in the output skyl
 '''
 
 
-# Solution 1: segment tree, O(nlogn)
+# Solution 1: segment tree, O(nlogn), 256ms
 class SegmentTreeNode(object):
     def __init__(self, l, r):
         self.left = None
@@ -90,6 +90,42 @@ class Solution(object):
         retval.append([allx[-1], 0])
         return retval
 
+# Solution 2: heap, O(nlogn), 95ms
+# the heap stores (height, right_boundary)
+# scan from left to right, insert a building into the heap at left boundary, remove at right boundary
+# Problem: we cannot remove an arbitary element from a heap
+# Solution1: use pointers to remove arbitary element
+# Solution2: we can keep the building in the heap until it is at the top (then removal would be trivial)
+import heapq
+class Solution(object):
+    def getSkyline(self, buildings):
+        if len(buildings) == 0: return []
+        heap = [(-buildings[0][2], buildings[0][1])]
+        ans = [[buildings[0][0], buildings[0][2]]]
+        for l, r, h in buildings[1:]:
+            x = 0
+            while len(heap) > 0 and heap[0][1] < l:
+                x = max(x, heap[0][1])
+                heapq.heappop(heap)
+                if len(heap) > 0:
+                    if heap[0][1] > x: ans.append([x, -heap[0][0]])
+                else: ans.append([x, 0])
+            heapq.heappush(heap, (-h, r))
+            if h > ans[-1][1]:
+                if l == ans[-1][0]: ans[-1][1] = h
+                else: ans.append([l, h])
+        x = 0
+        while len(heap) > 0:
+            x = max(x, heap[0][1])
+            heapq.heappop(heap)
+            if len(heap) > 0 and heap[0][1] > x: ans.append([x, -heap[0][0]])
+        ans.append([x, 0])
+        # remove consecutive equal values
+        retval = [ans[0]]
+        for pair in ans[1:]:
+            if pair[1] != retval[-1][1]: retval.append(pair)
+        return retval
+
 import unittest
 class Test(unittest.TestCase):
     def test1(self):
@@ -99,6 +135,18 @@ class Test(unittest.TestCase):
     def test2(self):
         buildings = [[2,9,10]]
         skyline = [[2,10],[9,0]]
+        self.assertEqual(Solution().getSkyline(buildings), skyline)
+    def test3(self):
+        buildings = [[3,6,4],[6,8,5]]
+        skyline = [[3,4], [6,5], [8,0]]
+        self.assertEqual(Solution().getSkyline(buildings), skyline)
+    def test4(self):
+        buildings = [[3,6,4],[6,8,3]]
+        skyline = [[3,4], [6,3], [8,0]]
+        self.assertEqual(Solution().getSkyline(buildings), skyline)
+    def test5(self):
+        buildings = [[3,6,4],[6,8,4]]
+        skyline = [[3,4], [8,0]]
         self.assertEqual(Solution().getSkyline(buildings), skyline)
 
 if __name__ == '__main__':
