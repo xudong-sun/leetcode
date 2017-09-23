@@ -21,7 +21,11 @@ findMedian() -> 2
 
 #include "essentials.h"
 
-// use two heaps. Heap 1 stores the smaller half; heap 2 stores the larger half
+#define __SOLUTION_2
+
+#ifdef __SOLUTION_1
+// use two heaps. O(logn), O(1), 142ms
+// Heap 1 stores the smaller half; heap 2 stores the larger half
 class MedianFinder {
 public:
 	MedianFinder() {}
@@ -60,6 +64,72 @@ private:
 	std::vector<int> small, large;
 };
 
+#endif
+
+#ifdef __SOLUTION_2
+
+// Binary Search Tree: O(logn), O(logn), 148ms
+// Each node keeps track #nodes in its left child
+class MedianFinder {
+public:
+    MedianFinder() : tree(nullptr), total(0) {}
+    void addNum(int num) {
+        total++;
+        if (tree == nullptr) {
+            tree = new TreeNode(num);
+            return;
+        }
+        auto node = tree;
+        while (true) {
+            if (num <= node->val) {
+                node->leftCount++;
+                if (node->left == nullptr) {
+                    node->left = new TreeNode(num);
+                    return;
+                }
+                else node = node->left;
+            }
+            else {
+                if (node->right == nullptr) {
+                    node->right = new TreeNode(num);
+                    return;
+                }
+                else node = node->right;
+            }
+        }
+    }
+    double findMedian() {
+        if (total == 0) return 0;
+        if (total % 2 == 1) return findNth(total / 2 + 1);
+        else return (findNth(total / 2) + findNth(total / 2 + 1)) * 0.5;
+    }
+private:
+    struct TreeNode {
+        TreeNode *left, *right;
+        int leftCount, val;
+        TreeNode(int val) : left(nullptr), right(nullptr), val(val), leftCount(0) {}
+    };
+    int findNth(int n) {
+        auto node = tree;
+        int count = 0;
+        while (true) {
+            auto newCount = count + node->leftCount + 1;
+            if (newCount == n) return node->val;
+            else if (newCount < n) {
+                count = newCount;
+                node = node->right;
+            }
+            else {
+                node = node->left;
+            }
+        }
+    }
+    TreeNode* tree;
+    int total;
+};
+
+#endif
+
 int main() {
 	auto sol = std::make_unique<MedianFinder>();
 	sol->addNum(1);
@@ -67,4 +137,8 @@ int main() {
 	assert(sol->findMedian() == 1.5);
 	sol->addNum(3);
 	assert(sol->findMedian() == 2);
+    sol->addNum(-1);
+    assert(sol->findMedian() == 1.5);
+    sol->addNum(0);
+    assert(sol->findMedian() == 1);
 }
