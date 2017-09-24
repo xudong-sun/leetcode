@@ -19,42 +19,40 @@ No such pair of words.
 
 #include "essentials.h"
 
-struct Word {
-	unsigned int length;
-	unsigned int code;
-};
-
 class Solution {
 public:
-	int maxProduct(std::vector<std::string>& words) {
-		std::vector<Word> temp;
-		for (size_t i = 0; i < words.size(); i++) {
-			Word word;
-			std::string thisWord = words[i];
-			word.length = thisWord.length();
-			word.code = 0;
-			for (size_t i = 0; i < word.length; i++) word.code |= 1 << (thisWord[i] - 'a');
-			temp.push_back(word);
-		}
-		std::sort(temp.begin(), temp.end(), [](Word& word1, Word& word2){return word1.length > word2.length; });
-		int maxValue = 0;
-		for (size_t i = 0; i < temp.size(); i++) {
-			int length1 = temp[i].length;
-			for (size_t j = 0; j < temp.size(); j++) {
-				int length2 = temp[j].length;
-				if (length1*length2 <= maxValue) break;
-				if ((temp[i].code & temp[j].code) == 0) maxValue = length1*length2;
-			}
-		}
-		return maxValue;
-	}
-	
+    int maxProduct(const std::vector<std::string>& words) {
+        std::vector<Word> temp;
+        for (auto word : words) {
+            unsigned int code = 0;
+            std::for_each(word.cbegin(), word.cend(), [&code](char ch) { code |= 1 << (ch - 'a'); });
+            temp.emplace_back(word.size(), code);
+        }
+        std::sort(temp.begin(), temp.end(), [](const Word& word1, const Word& word2) { return word1.length > word2.length; });
+        unsigned int maxValue = 0;
+        for (size_t i = 0; i < temp.size(); i++) {
+            size_t length1 = temp[i].length;
+            for (size_t j = i + 1; j < temp.size(); j++) {
+                size_t length2 = temp[j].length;
+                if (length1 * length2 <= maxValue) break;
+                if ((temp[i].code & temp[j].code) == 0) maxValue = length1 * length2;
+            }
+        }
+        return maxValue;
+    }
+private:
+    struct Word {
+        size_t length;
+        unsigned int code;
+        Word(unsigned int length, unsigned int code) : length(length), code(code) {}
+    };
 };
 
 int main() {
-	auto sol = new Solution();
-	std::vector<std::string> words{ "abcw", "baz", "foo", "bar", "xtfn", "abcdef" };
-	std::cout << sol->maxProduct(words) << std::endl;
-	delete sol;
-	commons::pause();
+    auto sol = std::make_unique<Solution>();
+    assert(sol->maxProduct(std::vector<std::string> { "abcw", "baz", "foo", "bar", "xtfn", "abcdef" }) == 16);
+    assert(sol->maxProduct(std::vector<std::string> { "a", "ab", "abc", "d", "cd", "bcd", "abcd" }) == 4);
+    assert(sol->maxProduct(std::vector<std::string> { "a", "aa", "aaa", "aaaa" }) == 0);
+    assert(sol->maxProduct(std::vector<std::string> { "abc" }) == 0);
+    assert(sol->maxProduct(std::vector<std::string>()) == 0);
 }
